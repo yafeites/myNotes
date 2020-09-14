@@ -102,3 +102,53 @@ JVM 初始化步骤：
 - 1、假如这个类还没有被加载和连接，则程序先加载并连接该类。
 - 2、假如该类的直接父类还没有被初始化，则先初始化其直接父类。
 - 3、假如类中有初始化语句，则系统依次执行这些初始化语句。
+
+
+
+### FGC的排查方案
+
+#### **1. 检查JVM配置**
+
+> -Xms4g -Xmx4g -Xmn2g -Xss1024K 
+>
+> -XX:ParallelGCThreads=5 
+>
+> -XX:+UseConcMarkSweepGC 
+>
+> -XX:+UseParNewGC 
+>
+> -XX:+UseCMSCompactAtFullCollection 
+>
+> -XX:CMSInitiatingOccupancyFraction=80
+
+
+
+#### **2. 观察老年代的内存变化**
+
+![image-20200914193146210](JVM.assets/image-20200914193146210.png)
+
+#### **3. 通过jmap命令查看堆内存中的对象**
+
+##### ![image-20200914193239839](JVM.assets/image-20200914193239839.png)
+
+#### **4. 进一步dump堆内存文件进行分析**
+
+dump堆内存文件，通过可视化工具进一步跟踪对象的来源,通过JVisualVM工具导入dump出来的堆内存文件
+
+![image-20200914193323070](JVM.assets/image-20200914193323070.png)
+
+#### 5. 通过代码分析可疑对象
+
+
+
+### CPU100%排查方法
+
+#### top -c找到进程运行列表
+
+#### top -HP xxxx找到进程下面的线程
+
+#### Jstack导出进程快照
+
+#### 查看线程目前进行的方法
+
+##### cat 2609.stack |grep(线程ID) -C 8
